@@ -41,13 +41,20 @@ export function Photobooth() {
   const peer = useRef<RTCPeerConnection | null>(null);
   const socket = useRef<WebSocket | null>(null);
   const clientId = useRef(Math.random().toString(36).slice(2));
+  const roomRef = useRef("");
   const captureRef = useRef<() => void>(() => {});
   const required = layout === "strip" ? 4 : 1;
   const signalingUrl = process.env.NEXT_PUBLIC_SIGNAL_URL;
 
   const send = useCallback((message: Signal) => {
     if (socket.current?.readyState === WebSocket.OPEN) {
-      socket.current.send(JSON.stringify({ ...message, room, from: clientId.current }));
+      socket.current.send(
+  JSON.stringify({
+    ...message,
+    room: roomRef.current,
+    from: clientId.current,
+  }),
+);
     }
   }, [room]);
 
@@ -118,6 +125,7 @@ export function Photobooth() {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 }, audio: true });
       localStream.current = stream;
+      roomRef.current = clean;
       setRoom(clean);
       setJoined(true);
       setStatus(signalingUrl ? "Waiting for your person…" : "Starting demo room…");
