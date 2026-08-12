@@ -124,7 +124,7 @@ export function Photobooth() {
       setTimeout(() => {
         if (localVideo.current) localVideo.current.srcObject = stream;
         connectRoom(clean);
-      }, 0);
+}, 500);
     } catch {
       setStatus("Camera permission is needed to enter");
     }
