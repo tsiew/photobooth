@@ -21,9 +21,13 @@ wss.on("connection", (socket) => {
         const members = rooms.get(currentRoom);
         if (members.size >= 2) return socket.send(JSON.stringify({ type: "room-full" }));
         members.add(socket);
-        if (members.size === 2) broadcast(currentRoom, { type: "peer-ready", from: "server" });
-        return;
-      }
+       if (members.size === 2) {
+  broadcast(
+    currentRoom,
+    { type: "peer-ready", from: "server" },
+    socket
+  );
+}
       if (currentRoom) broadcast(currentRoom, message, socket);
     } catch { socket.send(JSON.stringify({ type: "error", message: "Invalid message" })); }
   });
