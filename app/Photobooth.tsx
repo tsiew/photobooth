@@ -76,8 +76,16 @@ export function Photobooth() {
 
   const setupPeer = useCallback(async (initiator: boolean) => {
     if (!localStream.current || peer.current) return;
-    const pc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
-    peer.current = pc;
+const pc = new RTCPeerConnection({
+  iceServers: [
+    { urls: "stun:stun.l.google.com:19302" },
+    {
+      urls: process.env.NEXT_PUBLIC_TURN_URL!,
+      username: process.env.NEXT_PUBLIC_TURN_USERNAME!,
+      credential: process.env.NEXT_PUBLIC_TURN_CREDENTIAL!,
+    },
+  ],
+});    peer.current = pc;
     localStream.current.getTracks().forEach((track) => pc.addTrack(track, localStream.current!));
     pc.ontrack = (event) => {
       if (remoteVideo.current) remoteVideo.current.srcObject = event.streams[0];
